@@ -1,0 +1,1 @@
+const res=document.getElementById('res');function run(){res.innerText='Bindings: '+(code.value.match(/lua_/g)||[]).length;}

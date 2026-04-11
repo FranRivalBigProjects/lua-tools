@@ -1,0 +1,1 @@
+const res=document.getElementById('res');function run(){res.innerText=text.value.includes(pattern.value)?'Match':'No match';}

@@ -1,0 +1,1 @@
+const res=document.getElementById('res');function run(){res.innerText='Estimated memory: '+(+objects.value*32)+' KB';}
