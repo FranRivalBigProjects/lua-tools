@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" />
+<meta name="robots" content="index, follow">
+
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3NG4HSYMTR"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-3NG4HSYMTR');
 </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" />
-<meta name="robots" content="index, follow">
 
 <title>Lua Tools – Validator, Formatter, Minifier & Pattern Tester Online</title>
 <meta name="description" content="Free online Lua tools. Validate Lua syntax with line-level error reporting, format and beautify Lua code, minify scripts, and test Lua string patterns interactively. No install, no login.">
@@ -502,12 +502,12 @@ footer nav a:hover { color: var(--acc); }
   <div class="container">
     <h2>More Lua <em>Tools</em></h2>
     <div class="tools-grid">
-      <a href="performance/index.html" class="tn"><span class="tn-n">Performance Analyzer</span><span class="tn-d">Profile Lua script performance</span></a>
-      <a href="coroutine/index.html" class="tn"><span class="tn-n">Coroutine Debugger</span><span class="tn-d">Visualize coroutine lifecycle</span></a>
-      <a href="metatable/index.html" class="tn"><span class="tn-n">Metatable Tester</span><span class="tn-d">Test metatables and __index</span></a>
-      <a href="table/index.html" class="tn"><span class="tn-n">Table Analyzer</span><span class="tn-d">Optimize Lua table usage</span></a>
-      <a href="sandbox/index.html" class="tn"><span class="tn-n">Sandbox Tester</span><span class="tn-d">Test Lua isolation environments</span></a>
-      <a href="state-machine/index.html" class="tn"><span class="tn-n">State Machine</span><span class="tn-d">Design and test FSMs</span></a>
+      <a href="performance/index.html" class="tn" onclick="gtag('event','related_tool_click',{tool_name:'performance'})"><span class="tn-n">Performance Analyzer</span><span class="tn-d">Profile Lua script performance</span></a>
+      <a href="coroutine/index.html" class="tn" onclick="gtag('event','related_tool_click',{tool_name:'coroutine'})"><span class="tn-n">Coroutine Debugger</span><span class="tn-d">Visualize coroutine lifecycle</span></a>
+      <a href="metatable/index.html" class="tn" onclick="gtag('event','related_tool_click',{tool_name:'metatable'})"><span class="tn-n">Metatable Tester</span><span class="tn-d">Test metatables and __index</span></a>
+      <a href="table/index.html" class="tn" onclick="gtag('event','related_tool_click',{tool_name:'table'})"><span class="tn-n">Table Analyzer</span><span class="tn-d">Optimize Lua table usage</span></a>
+      <a href="sandbox/index.html" class="tn" onclick="gtag('event','related_tool_click',{tool_name:'sandbox'})"><span class="tn-n">Sandbox Tester</span><span class="tn-d">Test Lua isolation environments</span></a>
+      <a href="state-machine/index.html" class="tn" onclick="gtag('event','related_tool_click',{tool_name:'state-machine'})"><span class="tn-n">State Machine</span><span class="tn-d">Design and test FSMs</span></a>
     </div>
   </div>
 </section>
@@ -549,6 +549,11 @@ function st(name, btn) {
   btn.className = 'ttab active';
   document.getElementById('tp-' + name).className = 'tpanel active';
   if (name === 'pattern') { initPatternExamples(); }
+
+  /* GA4 tracking: which tab the user switched to */
+  if (typeof gtag === 'function') {
+    gtag('event', 'tool_tab_click', { tool_name: name });
+  }
 }
 
 /* ════════════════════════════════════════
@@ -756,6 +761,11 @@ function validateLua() {
   var all = errors.concat(warnings);
   all.sort(function(a,b) { return a.line - b.line; });
 
+  /* GA4 tracking: validator actually run, with result counts */
+  if (typeof gtag === 'function') {
+    gtag('event', 'tool_used', { tool_name: 'validator', error_count: errors.length, warning_count: warnings.length });
+  }
+
   renderValResult(all, lines.length);
 }
 
@@ -855,6 +865,11 @@ function formatLua() {
   var result = output.join(eol);
   document.getElementById('fmt-output').value = result;
   document.getElementById('fmt-hint').textContent = lines.length + ' lines → ' + output.length + ' lines';
+
+  /* GA4 tracking: formatter actually run */
+  if (typeof gtag === 'function') {
+    gtag('event', 'tool_used', { tool_name: 'formatter' });
+  }
 }
 
 /* ════════════════════════════════════════
@@ -905,6 +920,11 @@ function minifyLua() {
     + statC(saved + '%', 'Size reduction', saved > 20 ? '#4ade80' : 'var(--muted)')
     + statC(result.length, 'Output chars', 'var(--muted)');
   document.getElementById('min-hint').textContent = fmtBytes(inSize) + ' → ' + fmtBytes(outSize) + ' (-' + saved + '%)';
+
+  /* GA4 tracking: minifier actually run, with size reduction */
+  if (typeof gtag === 'function') {
+    gtag('event', 'tool_used', { tool_name: 'minifier', size_reduction_pct: saved });
+  }
 }
 
 function findCommentStart(line) {
@@ -1028,6 +1048,11 @@ function testPattern() {
   }
 
   document.getElementById('pat-result').innerHTML = result;
+
+  /* GA4 tracking: pattern tester actually run */
+  if (typeof gtag === 'function') {
+    gtag('event', 'tool_used', { tool_name: 'pattern_tester', pattern_function: func });
+  }
 }
 
 function renderCaptures(m) {
