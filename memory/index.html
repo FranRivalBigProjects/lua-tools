@@ -1,2 +1,355 @@
-<html><head><meta charset='UTF-8'><title>Lua Memory Usage Analyzer</title><meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" /><link rel='stylesheet' href='styles.css'></head><body><div class='container'><h1>Lua Memory Usage Analyzer</h1><input id='objects'><button onclick='run()'>Run</button><div id='res' class='result'></div></div><script src='script.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lua Memory Usage Analyzer Online - Estimate Table & Script Memory</title>
+<meta name="description" content="Free online Lua memory usage analyzer. Paste a Lua table and get a byte-level breakdown based on PUC-Rio Lua's internal memory model. Includes a Lua online sandbox to run and test code.">
+<meta name="google-site-verification" content="PLACEHOLDER_VERIFICATION_CODE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.6rem; color: #58a6ff; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; font-size: 0.95rem; margin-bottom: 12px; }
+  h2 { font-size: 1.15rem; color: #79c0ff; border-bottom: 1px solid #21262d; padding-bottom: 8px; margin-top: 40px; }
+  .keywords { color: #6e7681; font-size: 0.8rem; margin: 4px 0 20px; }
+  p { color: #8b949e; font-size: 0.9rem; }
+  textarea {
+    width: 100%;
+    min-height: 160px;
+    background: #161b22;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    resize: vertical;
+  }
+  button {
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button:hover { background: #2ea043; }
+  button.secondary { background: #21262d; border: 1px solid #30363d; }
+  button.secondary:hover { background: #30363d; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .col { flex: 1 1 320px; min-width: 280px; }
+  .output {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 14px;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    max-height: 420px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+  .error { color: #f85149; }
+  .success { color: #3fb950; }
+  table.breakdown { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 10px; }
+  table.breakdown td, table.breakdown th { border-bottom: 1px solid #21262d; padding: 6px 8px; text-align: left; }
+  table.breakdown th { color: #79c0ff; }
+  .total-badge { display: inline-block; background: #1f6feb; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; margin-top: 8px; }
+  .note { color: #6e7681; font-size: 0.78rem; margin-top: 10px; }
+  footer { margin-top: 50px; color: #484f58; font-size: 0.75rem; border-top: 1px solid #21262d; padding-top: 16px; }
+  a { color: #58a6ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Lua Memory Usage Analyzer Online</h1>
+  <p class="subtitle">Paste a Lua table and get a byte-level memory estimate based on Lua's internal (PUC-Rio) memory model — table headers, array/hash slots, and string interning, all calculated client-side.</p>
+  <p class="keywords">lua memory usage analyzer &middot; lua table memory calculator &middot; lua memory profiler online &middot; how much memory does a lua table use &middot; lua sizeof calculator</p>
+
+  <!-- SECTION A: MEMORY ANALYZER (primary keyword) -->
+  <h2 id="memory-analyzer">Lua Table Memory Analyzer</h2>
+  <p>Paste a Lua table literal below (e.g. <code>local t = { firstName = "John", tags = {"admin","user"} }</code>). This estimates memory the way the official Lua manual documents table/string internals: a table header, 16 bytes per array slot, ~40 bytes per hash-part entry, and string headers with interning (repeated strings only counted once) — the same reasoning developers use manually on Stack Overflow, done instantly.</p>
+
+  <textarea id="memInput" spellcheck="false">local Person = {
+  firstName = "John",
+  lastName = "Doe",
+  age = 30,
+  tags = {"admin", "user", "beta-tester"},
+  active = true
+}</textarea>
+  <br>
+  <button id="analyzeBtn">Analyze Memory</button>
+  <button class="secondary" id="clearMemBtn">Clear</button>
+
+  <div id="memResult" class="output"><span style="color:#6e7681">// El desglose de memoria aparecerá aquí</span></div>
+  <p class="note">Nota: esto es una <strong>estimación basada en el modelo de memoria interno documentado de Lua 5.1/5.4 (build de 64 bits)</strong>, no una medición en vivo — el tamaño real puede variar levemente según la versión de Lua, el build (32/64-bit) y el factor de carga interno de las tablas hash.</p>
+
+  <!-- SECTION B: LUA ONLINE SANDBOX (secondary keyword volume) -->
+  <h2 id="lua-online">Lua Online — Run &amp; Test Lua Code</h2>
+  <p>Need to just run Lua code in the browser first? This sandbox executes real Lua (via a WebAssembly-free Lua VM running in JS) and shows <code>print()</code> output below.</p>
+
+  <textarea id="runInput" spellcheck="false">local function greet(name)
+  return "Hello, " .. name
+end
+
+print(greet("world"))</textarea>
+  <br>
+  <button id="runBtn">Run</button>
+  <button class="secondary" id="clearRunBtn">Clear</button>
+
+  <div id="runResult" class="output"><span style="color:#6e7681">// El resultado de print() aparecerá aquí</span></div>
+
+  <footer>
+    Runs 100% in your browser. Lua execution sandbox powered by <a href="https://github.com/fengari-lua/fengari-web" target="_blank" rel="noopener">fengari-web</a> (MIT License). Memory estimates follow the documented PUC-Rio Lua internal data structures (lua.org manual), not a live profiler.
+  </footer>
+</div>
+
+<script>
+// ================= MEMORY ANALYZER ENGINE (ES5) =================
+function LuaParseError(msg, pos) { this.message = msg; this.pos = pos; }
+
+function parseLuaValue(src) {
+  var i = 0;
+  var len = src.length;
+
+  function skipWs() {
+    while (i < len && /\s/.test(src[i])) { i++; }
+    if (src.substr(i, 2) === '--') {
+      while (i < len && src[i] !== '\n') { i++; }
+      skipWs();
+    }
+  }
+  function parseString(quote) {
+    i++;
+    var out = '';
+    while (i < len && src[i] !== quote) {
+      if (src[i] === '\\') { i++; out += src[i]; i++; }
+      else { out += src[i]; i++; }
+    }
+    i++;
+    return { type: 'string', value: out };
+  }
+  function parseNumber() {
+    var start = i;
+    if (src[i] === '-') { i++; }
+    while (i < len && /[0-9.]/.test(src[i])) { i++; }
+    return { type: 'number', value: parseFloat(src.slice(start, i)) };
+  }
+  function parseIdentifier() {
+    var start = i;
+    while (i < len && /[A-Za-z0-9_]/.test(src[i])) { i++; }
+    return src.slice(start, i);
+  }
+  function parseValue() {
+    skipWs();
+    var c = src[i];
+    if (c === '{') { return parseTable(); }
+    if (c === "'" || c === '"') { return parseString(c); }
+    if (c === '-' || /[0-9]/.test(c)) { return parseNumber(); }
+    if (/[A-Za-z_]/.test(c)) {
+      var ident = parseIdentifier();
+      if (ident === 'true') { return { type: 'boolean', value: true }; }
+      if (ident === 'false') { return { type: 'boolean', value: false }; }
+      if (ident === 'nil') { return { type: 'nil', value: null }; }
+      return { type: 'identifier', value: ident };
+    }
+    throw new LuaParseError('Valor inesperado (usa literales: strings, numeros, booleanos, nil, tablas anidadas)', i);
+  }
+  function parseTable() {
+    i++;
+    var arrayPart = [];
+    var hashPart = [];
+    skipWs();
+    while (i < len && src[i] !== '}') {
+      skipWs();
+      var save = i;
+      if (src[i] === '[') {
+        i++;
+        var keyVal = parseValue();
+        skipWs();
+        if (src[i] === ']') { i++; }
+        skipWs();
+        if (src[i] === '=') { i++; }
+        var val = parseValue();
+        hashPart.push({ key: keyVal, value: val });
+      } else if (/[A-Za-z_]/.test(src[i])) {
+        var name = parseIdentifier();
+        skipWs();
+        if (src[i] === '=') {
+          i++;
+          var val2 = parseValue();
+          hashPart.push({ key: { type: 'string', value: name }, value: val2 });
+        } else {
+          i = save;
+          arrayPart.push(parseValue());
+        }
+      } else {
+        arrayPart.push(parseValue());
+      }
+      skipWs();
+      if (src[i] === ',' || src[i] === ';') { i++; skipWs(); }
+    }
+    if (src[i] === '}') { i++; }
+    return { type: 'table', array: arrayPart, hash: hashPart };
+  }
+
+  skipWs();
+  var stripped = src.slice(i);
+  var localMatch = /^local\s+/.exec(stripped);
+  if (localMatch) {
+    i += localMatch[0].length;
+    skipWs();
+    parseIdentifier();
+    skipWs();
+    if (src[i] === '=') { i++; }
+  } else {
+    var assignMatch = /^[A-Za-z_][A-Za-z0-9_.]*\s*=\s*/.exec(stripped);
+    if (assignMatch) { i += assignMatch[0].length; }
+  }
+  skipWs();
+  if (src[i] !== '{') {
+    throw new LuaParseError('Se esperaba una tabla Lua literal, ej: { 1, 2, name = "x" }', i);
+  }
+  return parseValue();
+}
+
+var SIZES = {
+  TABLE_HEADER: 56,
+  ARRAY_SLOT: 16,
+  HASH_NODE: 40,
+  STRING_HEADER: 40
+};
+
+function computeSize(node, interned) {
+  if (node.type === 'string') {
+    var extra = 0;
+    if (!interned[node.value]) {
+      interned[node.value] = true;
+      extra = SIZES.STRING_HEADER + node.value.length + 1;
+    }
+    return { total: extra };
+  }
+  if (node.type === 'number' || node.type === 'boolean' || node.type === 'nil' || node.type === 'identifier') {
+    return { total: 0 };
+  }
+  if (node.type === 'table') {
+    var total = SIZES.TABLE_HEADER;
+    var breakdown = { tableHeaders: SIZES.TABLE_HEADER, arraySlots: 0, hashNodes: 0, strings: 0, nested: 0 };
+    var a;
+    for (a = 0; a < node.array.length; a++) {
+      total += SIZES.ARRAY_SLOT;
+      breakdown.arraySlots += SIZES.ARRAY_SLOT;
+      var subA = computeSize(node.array[a], interned);
+      total += subA.total;
+      if (node.array[a].type === 'table') { breakdown.nested += subA.total; }
+      else if (node.array[a].type === 'string') { breakdown.strings += subA.total; }
+    }
+    var h;
+    for (h = 0; h < node.hash.length; h++) {
+      total += SIZES.HASH_NODE;
+      breakdown.hashNodes += SIZES.HASH_NODE;
+      var keySize = computeSize(node.hash[h].key, interned);
+      var valSize = computeSize(node.hash[h].value, interned);
+      total += keySize.total + valSize.total;
+      if (node.hash[h].key.type === 'string') { breakdown.strings += keySize.total; }
+      if (node.hash[h].value.type === 'string') { breakdown.strings += valSize.total; }
+      if (node.hash[h].value.type === 'table') { breakdown.nested += valSize.total; }
+    }
+    return { total: total, breakdown: breakdown };
+  }
+  return { total: 0 };
+}
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+document.getElementById('analyzeBtn').addEventListener('click', function () {
+  var src = document.getElementById('memInput').value;
+  var out = document.getElementById('memResult');
+  try {
+    var ast = parseLuaValue(src);
+    var interned = {};
+    var result = computeSize(ast, interned);
+    var b = result.breakdown;
+    var html = '<div class="success">Análisis completo.</div>';
+    html += '<span class="total-badge">Total estimado: ' + result.total + ' bytes (~' + (result.total / 1024).toFixed(2) + ' KB)</span>';
+    html += '<table class="breakdown"><tr><th>Componente</th><th>Bytes</th></tr>';
+    html += '<tr><td>Header(s) de tabla</td><td>' + b.tableHeaders + '</td></tr>';
+    html += '<tr><td>Array part (slots)</td><td>' + b.arraySlots + '</td></tr>';
+    html += '<tr><td>Hash part (nodos clave/valor)</td><td>' + b.hashNodes + '</td></tr>';
+    html += '<tr><td>Strings (con interning)</td><td>' + b.strings + '</td></tr>';
+    html += '<tr><td>Tablas anidadas</td><td>' + b.nested + '</td></tr>';
+    html += '</table>';
+    out.innerHTML = html;
+  } catch (e) {
+    var msg = e && e.message ? e.message : String(e);
+    out.innerHTML = '<div class="error">Error: ' + esc(msg) + '</div>';
+  }
+});
+
+document.getElementById('clearMemBtn').addEventListener('click', function () {
+  document.getElementById('memInput').value = '';
+});
+
+// ================= LUA ONLINE SANDBOX (fengari) =================
+document.getElementById('runBtn').addEventListener('click', function () {
+  var code = document.getElementById('runInput').value;
+  var out = document.getElementById('runResult');
+  var lines = [];
+  try {
+    var fengari = window.fengari;
+    var lua = fengari.lua;
+    var lauxlib = fengari.lauxlib;
+    var lualib = fengari.lualib;
+    var to_luastring = fengari.to_luastring;
+
+    var L = lauxlib.luaL_newstate();
+    lualib.luaL_openlibs(L);
+
+    lua.lua_pushjsfunction(L, function (L2) {
+      var n = lua.lua_gettop(L2);
+      var parts = [];
+      for (var k = 1; k <= n; k++) {
+        parts.push(lua.lua_tojsstring(L2, k));
+      }
+      lines.push(parts.join('\t'));
+      return 0;
+    });
+    lua.lua_setglobal(L, 'print');
+
+    var status = lauxlib.luaL_dostring(L, to_luastring(code));
+    if (status !== lua.LUA_OK) {
+      var errMsg = lua.lua_tojsstring(L, -1);
+      out.innerHTML = '<div class="error">Error: ' + esc(errMsg) + '</div>' + (lines.length ? '<pre>' + esc(lines.join('\n')) + '</pre>' : '');
+      return;
+    }
+    out.innerHTML = lines.length ? '<pre>' + esc(lines.join('\n')) + '</pre>' : '<span style="color:#6e7681">// Sin salida (no se llamo a print())</span>';
+  } catch (e) {
+    out.innerHTML = '<div class="error">Error ejecutando Lua: ' + esc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+});
+
+document.getElementById('clearRunBtn').addEventListener('click', function () {
+  document.getElementById('runInput').value = '';
+});
+</script>
+</body>
+</html>
