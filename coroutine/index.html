@@ -1,2 +1,467 @@
-<html><head><meta charset='UTF-8'><title>Lua Coroutine Visualizer</title><meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" /><link rel='stylesheet' href='styles.css'></head><body><div class='container'><h1>Lua Coroutine Visualizer</h1><textarea id='code'></textarea><button onclick='run()'>Run</button><div id='res' class='result'></div></div><script src='script.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lua Parser Generator Online - Parse Lua Code &amp; Test PEG Grammars</title>
+<meta name="description" content="Free online Lua parser generator. Parse Lua code into an AST and tokens instantly, or build and test a PEG grammar generator for your own language, right in the browser.">
+<meta name="google-site-verification" content="PLACEHOLDER_VERIFICATION_CODE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/luaparse@0.3.1/luaparse.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.6rem; color: #58a6ff; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; font-size: 0.95rem; margin-bottom: 28px; }
+  h2 { font-size: 1.15rem; color: #79c0ff; border-bottom: 1px solid #21262d; padding-bottom: 8px; margin-top: 40px; }
+  .keywords { color: #6e7681; font-size: 0.8rem; margin: 4px 0 20px; }
+  p { color: #8b949e; font-size: 0.9rem; }
+  textarea {
+    width: 100%;
+    min-height: 160px;
+    background: #161b22;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    resize: vertical;
+  }
+  button {
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button:hover { background: #2ea043; }
+  button.secondary { background: #21262d; border: 1px solid #30363d; }
+  button.secondary:hover { background: #30363d; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .col { flex: 1 1 320px; min-width: 280px; }
+  .output {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 14px;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  .error { color: #f85149; }
+  .success { color: #3fb950; }
+  .tree ul { list-style: none; padding-left: 18px; margin: 4px 0; border-left: 1px dashed #30363d; }
+  .tree li { margin: 2px 0; }
+  .rule-name { color: #d2a8ff; }
+  .rule-text { color: #79c0ff; }
+  .tabs { display: flex; gap: 8px; margin-top: 10px; }
+  .tab-btn { background: #161b22; border: 1px solid #30363d; color: #8b949e; padding: 6px 12px; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.8rem; }
+  .tab-btn.active { color: #58a6ff; border-bottom: 1px solid #161b22; background: #161b22; }
+  footer { margin-top: 50px; color: #484f58; font-size: 0.75rem; border-top: 1px solid #21262d; padding-top: 16px; }
+  a { color: #58a6ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Lua Parser Generator Online</h1>
+  <p class="subtitle">Parse Lua source into tokens/AST, or generate and test a PEG parser grammar for your own language — all client-side, nothing leaves your browser.</p>
+  <p class="keywords">lua parser online &middot; lua ast viewer &middot; lua syntax checker &middot; lua tokenizer online &middot; peg grammar tester &middot; lpeg grammar generator &middot; parse lua code online</p>
+
+  <!-- SECTION A: LUA CODE PARSER -->
+  <h2 id="lua-parser">Lua Code Parser &amp; AST Viewer</h2>
+  <p>Paste any Lua code below. This runs <code>luaparse</code> entirely in your browser and shows you the resulting Abstract Syntax Tree (AST) plus raw JSON — useful for debugging syntax errors, building linters, or just understanding how Lua code is structured.</p>
+
+  <textarea id="luaInput" spellcheck="false">local function greet(name)
+  local msg = "Hello, " .. name
+  return msg
+end
+
+print(greet("world"))</textarea>
+  <br>
+  <button id="parseLuaBtn">Parse Lua Code</button>
+  <button class="secondary" id="clearLuaBtn">Clear</button>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="luaTree">AST Tree</button>
+    <button class="tab-btn" data-tab="luaJson">Raw JSON</button>
+  </div>
+  <div id="luaTree" class="output"><span style="color:#6e7681">// El árbol de sintaxis aparecerá aquí</span></div>
+  <div id="luaJson" class="output" style="display:none"><span style="color:#6e7681">// El JSON crudo aparecerá aquí</span></div>
+
+  <!-- SECTION B: PEG GRAMMAR GENERATOR / TESTER -->
+  <h2 id="peg-generator">PEG Grammar Generator &amp; Tester (for building your own Lua-style parser)</h2>
+  <p>Not parsing Lua, but building a <strong>parser generator</strong> for your own grammar (a DSL, config format, or mini-language) the way <code>lpeg</code>/<code>re</code> does in Lua? Write your rules below using standard PEG syntax (<code>rule &lt;- expression</code>, <code>/</code> for ordered choice, <code>*</code> <code>+</code> <code>?</code> for repetition, <code>[...]</code> for character classes) and test it instantly against sample input.</p>
+
+  <div class="row">
+    <div class="col">
+      <label style="font-size:0.8rem;color:#8b949e">Grammar (PEG / lpeg-re style)</label>
+      <textarea id="grammarInput" spellcheck="false">expr   <- term (('+' / '-') term)*
+term   <- factor (('*' / '/') factor)*
+factor <- NUMBER / '(' expr ')'
+NUMBER <- [0-9]+</textarea>
+    </div>
+    <div class="col">
+      <label style="font-size:0.8rem;color:#8b949e">Test input</label>
+      <textarea id="grammarTestInput" spellcheck="false">1+2*(3-4)</textarea>
+    </div>
+  </div>
+  <button id="parseGrammarBtn">Test Grammar</button>
+  <button class="secondary" id="exportGrammarBtn">Export as Lua (lpeg re)</button>
+
+  <div id="grammarResult" class="output"><span style="color:#6e7681">// El resultado del match y el AST aparecerán aquí</span></div>
+
+  <footer>
+    Runs 100% in your browser. Lua parsing powered by <a href="https://github.com/fstirlitz/luaparse" target="_blank" rel="noopener">luaparse</a> (MIT License). PEG grammar engine is a lightweight in-browser interpreter for a common subset of PEG/lpeg-re syntax.
+  </footer>
+</div>
+
+<script>
+// ---------- PEG ENGINE (ES5, tested subset of PEG / lpeg-re syntax) ----------
+function PegError(msg, pos) { this.message = msg; this.pos = pos; }
+
+function compileGrammar(src) {
+  var i = 0;
+  var len = src.length;
+
+  function skipWs() {
+    var again = true;
+    while (again) {
+      again = false;
+      while (i < len && /\s/.test(src[i])) { i++; }
+      if (src.substr(i, 2) === '--') {
+        while (i < len && src[i] !== '\n') { i++; }
+        again = true;
+      }
+    }
+  }
+  function peekIdentStart() { return /[A-Za-z_]/.test(src[i] || ''); }
+  function parseIdentifier() {
+    var start = i;
+    while (i < len && /[A-Za-z0-9_]/.test(src[i])) { i++; }
+    if (i === start) { throw new PegError('Se esperaba un identificador', i); }
+    return src.slice(start, i);
+  }
+  function translateEscape(c) {
+    if (c === 'n') { return '\n'; }
+    if (c === 't') { return '\t'; }
+    return c;
+  }
+  function parseLiteral(quote) {
+    i++;
+    var out = '';
+    while (i < len && src[i] !== quote) {
+      if (src[i] === '\\') {
+        i++;
+        out += translateEscape(src[i]);
+        i++;
+      } else {
+        out += src[i];
+        i++;
+      }
+    }
+    if (src[i] !== quote) { throw new PegError('Cadena sin cerrar', i); }
+    i++;
+    return { type: 'literal', value: out };
+  }
+  function parseClass() {
+    i++;
+    var negate = false;
+    if (src[i] === '^') { negate = true; i++; }
+    var ranges = [];
+    while (i < len && src[i] !== ']') {
+      var c1 = src[i];
+      if (c1 === '\\') { i++; c1 = translateEscape(src[i]); }
+      i++;
+      if (src[i] === '-' && src[i + 1] !== ']') {
+        i++;
+        var c2 = src[i];
+        if (c2 === '\\') { i++; c2 = translateEscape(src[i]); }
+        i++;
+        ranges.push([c1, c2]);
+      } else {
+        ranges.push([c1, c1]);
+      }
+    }
+    if (src[i] !== ']') { throw new PegError('Clase de caracteres sin cerrar', i); }
+    i++;
+    return { type: 'class', negate: negate, ranges: ranges };
+  }
+  function parsePrimary() {
+    skipWs();
+    var c = src[i];
+    if (c === '(') {
+      i++;
+      var node = parseChoice();
+      skipWs();
+      if (src[i] !== ')') { throw new PegError("Se esperaba ')'", i); }
+      i++;
+      return node;
+    }
+    if (c === "'" || c === '"') { return parseLiteral(c); }
+    if (c === '[') { return parseClass(); }
+    if (c === '.') { i++; return { type: 'any' }; }
+    if (peekIdentStart()) { return { type: 'ref', name: parseIdentifier() }; }
+    throw new PegError('Token inesperado en la gramática', i);
+  }
+  function parseSuffixed() {
+    var node = parsePrimary();
+    skipWs();
+    var c = src[i];
+    if (c === '*' || c === '+' || c === '?') { i++; return { type: 'repeat', op: c, expr: node }; }
+    return node;
+  }
+  function parseSeq() {
+    var items = [];
+    skipWs();
+    while (i < len) {
+      skipWs();
+      var c = src[i];
+      if (c === '/' || c === ')' || c === undefined) { break; }
+      if (peekIdentStart()) {
+        var save = i;
+        parseIdentifier();
+        skipWs();
+        if (src.substr(i, 2) === '<-') { i = save; break; }
+        i = save;
+      }
+      items.push(parseSuffixed());
+      skipWs();
+    }
+    if (items.length === 1) { return items[0]; }
+    return { type: 'seq', items: items };
+  }
+  function parseChoice() {
+    var alts = [parseSeq()];
+    skipWs();
+    while (src[i] === '/') { i++; alts.push(parseSeq()); skipWs(); }
+    if (alts.length === 1) { return alts[0]; }
+    return { type: 'choice', alts: alts };
+  }
+
+  var rules = {};
+  var order = [];
+  skipWs();
+  while (i < len) {
+    skipWs();
+    if (i >= len) { break; }
+    var ruleName = parseIdentifier();
+    skipWs();
+    if (src.substr(i, 2) !== '<-') { throw new PegError("Se esperaba '<-' despues de '" + ruleName + "'", i); }
+    i += 2;
+    rules[ruleName] = parseChoice();
+    order.push(ruleName);
+    skipWs();
+  }
+  if (order.length === 0) { throw new PegError('La gramática esta vacía', 0); }
+  return { rules: rules, start: order[0] };
+}
+
+function matchClass(node, ch) {
+  if (ch === undefined) { return false; }
+  var inRange = false;
+  for (var k = 0; k < node.ranges.length; k++) {
+    var r = node.ranges[k];
+    if (ch >= r[0] && ch <= r[1]) { inRange = true; break; }
+  }
+  return node.negate ? !inRange : inRange;
+}
+
+function runGrammar(grammar, input) {
+  var steps = 0;
+  var STEP_LIMIT = 500000;
+
+  function matchExpr(node, pos) {
+    steps++;
+    if (steps > STEP_LIMIT) { throw new PegError('Limite de pasos excedido (posible recursion izquierda infinita)', pos); }
+    switch (node.type) {
+      case 'literal':
+        if (input.substr(pos, node.value.length) === node.value) { return { pos: pos + node.value.length, nodes: [] }; }
+        return null;
+      case 'any':
+        if (pos < input.length) { return { pos: pos + 1, nodes: [] }; }
+        return null;
+      case 'class':
+        if (pos < input.length && matchClass(node, input[pos])) { return { pos: pos + 1, nodes: [] }; }
+        return null;
+      case 'seq': {
+        var cur = pos, collected = [];
+        for (var s = 0; s < node.items.length; s++) {
+          var r = matchExpr(node.items[s], cur);
+          if (!r) { return null; }
+          cur = r.pos;
+          collected = collected.concat(r.nodes);
+        }
+        return { pos: cur, nodes: collected };
+      }
+      case 'choice':
+        for (var a = 0; a < node.alts.length; a++) {
+          var r2 = matchExpr(node.alts[a], pos);
+          if (r2) { return r2; }
+        }
+        return null;
+      case 'repeat': {
+        var count = 0, cur2 = pos, collected2 = [];
+        while (true) {
+          var r3 = matchExpr(node.expr, cur2);
+          if (!r3 || r3.pos === cur2) { break; }
+          cur2 = r3.pos;
+          collected2 = collected2.concat(r3.nodes);
+          count++;
+        }
+        if (node.op === '+' && count === 0) { return null; }
+        if (node.op === '?') { return { pos: count > 0 ? cur2 : pos, nodes: count > 0 ? collected2 : [] }; }
+        return { pos: cur2, nodes: collected2 };
+      }
+      case 'ref': {
+        var ruleExpr = grammar.rules[node.name];
+        if (!ruleExpr) { throw new PegError("Regla no definida: '" + node.name + "'", pos); }
+        var before = pos;
+        var r4 = matchExpr(ruleExpr, pos);
+        if (!r4) { return null; }
+        var childNode = { rule: node.name, pos: before, text: input.slice(before, r4.pos), children: r4.nodes };
+        return { pos: r4.pos, nodes: [childNode] };
+      }
+      default:
+        throw new PegError('Nodo desconocido', pos);
+    }
+  }
+
+  var result = matchExpr({ type: 'ref', name: grammar.start }, 0);
+  if (!result) { return { success: false, pos: 0 }; }
+  var tree = result.nodes[0];
+  return { success: true, pos: result.pos, matchedAll: result.pos === input.length, tree: tree, remaining: input.slice(result.pos) };
+}
+
+// ---------- DOM HELPERS ----------
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderLuaAst(node) {
+  if (node === null || typeof node !== 'object') { return '<li>' + esc(String(node)) + '</li>'; }
+  if (node instanceof Array) {
+    var out = '<ul>';
+    for (var i = 0; i < node.length; i++) { out += renderLuaAst(node[i]); }
+    out += '</ul>';
+    return out;
+  }
+  var type = node.type ? node.type : '(objeto)';
+  var html = '<li><span class="rule-name">' + esc(type) + '</span>';
+  var keys = [];
+  for (var k in node) { if (node.hasOwnProperty(k) && k !== 'type') { keys.push(k); } }
+  if (keys.length > 0) {
+    html += '<ul>';
+    for (var j = 0; j < keys.length; j++) {
+      var key = keys[j];
+      var val = node[key];
+      if (val && typeof val === 'object') {
+        html += '<li>' + esc(key) + ':' + renderLuaAst(val) + '</li>';
+      } else if (val !== null && val !== undefined) {
+        html += '<li>' + esc(key) + ': <span class="rule-text">' + esc(String(val)) + '</span></li>';
+      }
+    }
+    html += '</ul>';
+  }
+  html += '</li>';
+  return html;
+}
+
+function renderPegTree(node) {
+  if (!node) { return ''; }
+  var html = '<li><span class="rule-name">' + esc(node.rule) + '</span> = <span class="rule-text">"' + esc(node.text) + '"</span>';
+  if (node.children && node.children.length > 0) {
+    html += '<ul>';
+    for (var i = 0; i < node.children.length; i++) { html += renderPegTree(node.children[i]); }
+    html += '</ul>';
+  }
+  html += '</li>';
+  return html;
+}
+
+// ---------- SECTION A WIRING ----------
+document.getElementById('parseLuaBtn').addEventListener('click', function () {
+  var code = document.getElementById('luaInput').value;
+  var treeEl = document.getElementById('luaTree');
+  var jsonEl = document.getElementById('luaJson');
+  try {
+    var ast = window.luaparse.parse(code, { comments: false, scope: false });
+    treeEl.innerHTML = '<div class="success">Parseo exitoso.</div><ul class="tree">' + renderLuaAst(ast) + '</ul>';
+    jsonEl.innerHTML = '<pre>' + esc(JSON.stringify(ast, null, 2)) + '</pre>';
+  } catch (e) {
+    var msg = e && e.message ? e.message : String(e);
+    treeEl.innerHTML = '<div class="error">Error de sintaxis: ' + esc(msg) + '</div>';
+    jsonEl.innerHTML = '<div class="error">' + esc(msg) + '</div>';
+  }
+});
+
+document.getElementById('clearLuaBtn').addEventListener('click', function () {
+  document.getElementById('luaInput').value = '';
+});
+
+var tabBtns = document.querySelectorAll('.tab-btn');
+for (var t = 0; t < tabBtns.length; t++) {
+  tabBtns[t].addEventListener('click', function () {
+    for (var t2 = 0; t2 < tabBtns.length; t2++) { tabBtns[t2].classList.remove('active'); }
+    this.classList.add('active');
+    document.getElementById('luaTree').style.display = 'none';
+    document.getElementById('luaJson').style.display = 'none';
+    document.getElementById(this.getAttribute('data-tab')).style.display = 'block';
+  });
+}
+
+// ---------- SECTION B WIRING ----------
+document.getElementById('parseGrammarBtn').addEventListener('click', function () {
+  var grammarSrc = document.getElementById('grammarInput').value;
+  var testInput = document.getElementById('grammarTestInput').value;
+  var out = document.getElementById('grammarResult');
+  try {
+    var grammar = compileGrammar(grammarSrc);
+    var res = runGrammar(grammar, testInput);
+    if (!res.success) {
+      out.innerHTML = '<div class="error">No hubo match contra el input de prueba.</div>';
+      return;
+    }
+    var statusHtml = res.matchedAll
+      ? '<div class="success">Match completo (' + res.pos + ' caracteres consumidos).</div>'
+      : '<div class="error">Match parcial: se detuvo en la posición ' + res.pos + '. Sobrante: "' + esc(res.remaining) + '"</div>';
+    out.innerHTML = statusHtml + '<ul class="tree">' + renderPegTree(res.tree) + '</ul>';
+  } catch (e) {
+    var msg = e && e.message ? e.message : String(e);
+    var pos = (e && typeof e.pos === 'number') ? ' (posición ' + e.pos + ')' : '';
+    out.innerHTML = '<div class="error">Error en la gramática: ' + esc(msg) + esc(pos) + '</div>';
+  }
+});
+
+document.getElementById('exportGrammarBtn').addEventListener('click', function () {
+  var grammarSrc = document.getElementById('grammarInput').value;
+  var lines = grammarSrc.split('\n');
+  var luaLines = [];
+  luaLines.push('local re = require("re")');
+  luaLines.push('local grammar = re.compile([[');
+  for (var i = 0; i < lines.length; i++) { luaLines.push(lines[i]); }
+  luaLines.push(']])');
+  luaLines.push('');
+  luaLines.push('-- Uso: local ok, err = grammar:match(tu_texto)');
+  var out = document.getElementById('grammarResult');
+  out.innerHTML = '<div class="success">Listo para usar con lpeg (modulo "re") en un proyecto Lua real:</div><pre>' + esc(luaLines.join('\n')) + '</pre>';
+});
+</script>
+</body>
+</html>
