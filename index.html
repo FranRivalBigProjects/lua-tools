@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  /* Dark mode is the default. Only switch to light if the visitor
+     previously chose it — applied before first paint to avoid a flash. */
+  (function () {
+    try {
+      if (localStorage.getItem('luatools-theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) {}
+  })();
+</script>
 <meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" />
 <meta name="robots" content="index, follow">
 
@@ -56,17 +67,32 @@
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* DARK THEME (default) */
 :root {
   --bg:   #070a10; --bg2: #0c1018; --bg3: #111820;
   --b:    #182030; --b2:  #1e2c40;
   --text: #cce8f8; --muted: #3868a0;
   --acc:  #22d3ee; --acc2: #06b6d4;
-  --grn:  '#4ade80'; --grn-v: #4ade80;
-  --red:  '#f87171'; --red-v: #f87171;
-  --org:  '#fb923c';
-  --yel:  '#fbbf24'; --yel-v: #fbbf24;
+  --grn-v: #4ade80;
+  --red-v: #f87171;
+  --yel-v: #fbbf24;
+  --head: #ffffff;
   --mono: 'JetBrains Mono',monospace; --sans: 'Inter',sans-serif;
 }
+
+/* LIGHT THEME — opt-in via the toggle */
+html[data-theme="light"] {
+  --bg:   #f4f7fb; --bg2: #ffffff; --bg3: #eaf0f7;
+  --b:    #dde5ee; --b2:  #c7d3e2;
+  --text: #14202e; --muted: #52697f;
+  --acc:  #0e7fa3; --acc2: #0b6a89;
+  --grn-v: #16a34a;
+  --red-v: #dc2626;
+  --yel-v: #b45309;
+  --head: #0c1622;
+}
+
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.7; }
 .container { max-width: 980px; margin: 0 auto; padding: 0 22px; }
@@ -75,7 +101,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); font
 header { background: var(--bg2); border-bottom: 2px solid var(--acc); padding: 42px 0 26px; }
 .bc { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
 .bc a { color: var(--muted); text-decoration: none; }
-h1 { font-size: clamp(20px, 3.8vw, 34px); font-weight: 700; color: #fff; margin-bottom: 10px; line-height: 1.1; }
+h1 { font-size: clamp(20px, 3.8vw, 34px); font-weight: 700; color: var(--head); margin-bottom: 10px; line-height: 1.1; }
 h1 em { color: var(--acc); font-style: normal; }
 .lead { font-size: 15px; color: var(--muted); max-width: 640px; margin-bottom: 18px; }
 .pills { display: flex; gap: 7px; flex-wrap: wrap; }
@@ -91,7 +117,7 @@ h1 em { color: var(--acc); font-style: normal; }
 
 /* SECTIONS */
 section { padding: 50px 0; border-bottom: 1px solid var(--b); }
-h2 { font-size: 21px; font-weight: 700; margin-bottom: 8px; color: #fff; }
+h2 { font-size: 21px; font-weight: 700; margin-bottom: 8px; color: var(--head); }
 h2 em { color: var(--acc); font-style: normal; }
 .sec-lead { color: var(--muted); font-size: 14px; margin-bottom: 22px; max-width: 640px; }
 h3 { font-size: 15px; font-weight: 600; color: var(--text); margin: 26px 0 8px; }
@@ -117,7 +143,7 @@ strong { color: var(--text); }
 .code-area { width: 100%; background: var(--bg); border: 1px solid var(--b2); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 12px 14px; border-radius: 6px; outline: none; resize: vertical; transition: border-color .2s; line-height: 1.7; tab-size: 2; }
 .code-area:focus { border-color: var(--acc); }
 .code-area::placeholder { color: var(--muted); font-size: 11px; }
-.code-area[readonly] { cursor: default; color: #b0d0e8; }
+.code-area[readonly] { cursor: default; color: var(--text); }
 
 /* BUTTONS */
 .btn { font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 9px 18px; border-radius: 5px; cursor: pointer; text-transform: uppercase; letter-spacing: .06em; transition: all .15s; border: none; }
@@ -212,14 +238,41 @@ footer nav { display: flex; gap: 14px; flex-wrap: wrap; }
 footer nav a { color: var(--muted); text-decoration: none; }
 footer nav a:hover { color: var(--acc); }
 
+/* THEME TOGGLE — fixed at thumb height, bottom-right */
+.theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 84px;
+  z-index: 300;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--bg2);
+  border: 1.5px solid var(--b2);
+  color: var(--acc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(20,32,46,.18);
+  transition: transform .15s, border-color .15s;
+}
+.theme-toggle:hover  { border-color: var(--acc); }
+.theme-toggle:active { transform: scale(.92); }
+
 @media (max-width: 660px) {
   .split-edit { grid-template-columns: 1fr; }
   .info-grid { grid-template-columns: 1fr; }
   footer .container { flex-direction: column; }
+  .theme-toggle { right: 14px; bottom: 74px; }
 }
 </style>
 </head>
 <body>
+
+<button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Switch to light mode" title="Switch to light mode">☀️</button>
 
 <header>
   <div class="container">
@@ -539,6 +592,33 @@ footer nav a:hover { color: var(--acc); }
      JAVASCRIPT — ES5, NO ARROW FUNCTIONS
      ================================================================ -->
 <script>
+
+/* ── THEME TOGGLE (dark default / light mode opt-in) ── */
+function toggleTheme() {
+  var html = document.documentElement;
+  var isLight = html.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    html.removeAttribute('data-theme');
+    try { localStorage.setItem('luatools-theme', 'dark'); } catch (e) {}
+  } else {
+    html.setAttribute('data-theme', 'light');
+    try { localStorage.setItem('luatools-theme', 'light'); } catch (e) {}
+  }
+  updateToggleIcon();
+  if (typeof gtag === 'function') {
+    gtag('event', 'theme_toggle', { theme: html.getAttribute('data-theme') || 'dark' });
+  }
+}
+
+function updateToggleIcon() {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '🌙' : '☀️';
+  btn.title = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+  btn.setAttribute('aria-label', btn.title);
+}
+updateToggleIcon();
 
 /* ── TAB SWITCHER ── */
 function st(name, btn) {
