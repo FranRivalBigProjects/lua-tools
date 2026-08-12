@@ -267,12 +267,79 @@ footer nav a:hover { color: var(--acc); }
   .info-grid { grid-template-columns: 1fr; }
   footer .container { flex-direction: column; }
   .theme-toggle { right: 14px; bottom: 74px; }
+  .rate-toast { left: 10px; right: 10px; bottom: 10px; }
+}
+
+/* RATING BLOCK — above Pattern Reference */
+.rate-box {
+  background: var(--bg2);
+  border: 1.5px solid var(--b2);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.rate-title { font-size: 16px; font-weight: 700; color: var(--head); }
+.rate-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 3px; }
+.rate-stars { display: flex; gap: 4px; }
+.rate-stars .star {
+  background: none; border: none; cursor: pointer;
+  font-size: 30px; line-height: 1; color: var(--b2);
+  transition: color .12s, transform .12s;
+  padding: 2px;
+}
+.rate-stars .star:hover, .rate-stars .star.hover { transform: scale(1.12); }
+.rate-stars .star.filled, .rate-stars .star.hover { color: var(--yel-v); }
+.rate-result { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+/* RATING TOAST — non-intrusive prompt, bottom-left, avoids the theme toggle */
+.rate-toast {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 250;
+  max-width: 360px;
+  background: var(--bg2);
+  border: 1.5px solid var(--b2);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(10,16,24,.28);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateY(140%);
+  opacity: 0;
+  transition: transform .35s ease, opacity .35s ease;
+  pointer-events: none;
+}
+.rate-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.rate-toast-text { font-size: 13px; color: var(--text); line-height: 1.4; flex: 1; }
+.rate-toast-actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.rate-toast-btn {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .04em; background: var(--acc); color: #030c12; border: none;
+  border-radius: 5px; padding: 6px 12px; cursor: pointer; white-space: nowrap;
+}
+.rate-toast-close {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 13px; padding: 4px; align-self: flex-end;
 }
 </style>
 </head>
 <body>
 
 <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Switch to light mode" title="Switch to light mode">☀️</button>
+
+<div class="rate-toast" id="rate-toast" role="status">
+  <span class="rate-toast-text">Did this tool work for you? <strong>Rate it ⭐</strong></span>
+  <div class="rate-toast-actions">
+    <button class="rate-toast-btn" onclick="scrollToRating()">Rate it</button>
+    <button class="rate-toast-close" onclick="dismissToast()" aria-label="Dismiss">✕</button>
+  </div>
+</div>
 
 <header>
   <div class="container">
@@ -447,6 +514,26 @@ footer nav a:hover { color: var(--acc); }
   </div>
 </section>
 
+<!-- RATING -->
+<section id="rate" style="padding:34px 0;border-bottom:1px solid var(--b);">
+  <div class="container">
+    <div class="rate-box">
+      <div>
+        <div class="rate-title">Did this tool work for you?</div>
+        <div class="rate-sub" id="rate-sub">Tap a star to rate it — takes 2 seconds</div>
+      </div>
+      <div class="rate-stars" id="rate-stars" role="group" aria-label="Rate this tool">
+        <button class="star" data-v="1" onclick="submitRating(1)" onmouseover="previewStars(1)" onmouseout="previewStars(0)" aria-label="1 star">★</button>
+        <button class="star" data-v="2" onclick="submitRating(2)" onmouseover="previewStars(2)" onmouseout="previewStars(0)" aria-label="2 stars">★</button>
+        <button class="star" data-v="3" onclick="submitRating(3)" onmouseover="previewStars(3)" onmouseout="previewStars(0)" aria-label="3 stars">★</button>
+        <button class="star" data-v="4" onclick="submitRating(4)" onmouseover="previewStars(4)" onmouseout="previewStars(0)" aria-label="4 stars">★</button>
+        <button class="star" data-v="5" onclick="submitRating(5)" onmouseover="previewStars(5)" onmouseout="previewStars(0)" aria-label="5 stars">★</button>
+      </div>
+      <div class="rate-result" id="rate-result">Loading rating…</div>
+    </div>
+  </div>
+</section>
+
 <!-- PATTERN REFERENCE -->
 <section id="patterns">
   <div class="container">
@@ -592,6 +679,105 @@ footer nav a:hover { color: var(--acc); }
      JAVASCRIPT — ES5, NO ARROW FUNCTIONS
      ================================================================ -->
 <script>
+
+/* ── RATING WIDGET ── */
+var RATING_API = 'https://lua-tools.fran-rivas2020.workers.dev';
+var RATED_KEY = 'luatools-rated';
+var toastShownThisSession = false;
+
+function loadRating() {
+  fetch(RATING_API + '/rating')
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      var el = document.getElementById('rate-result');
+      if (!el) { return; }
+      el.textContent = d.count > 0
+        ? ('★ ' + d.average + ' · ' + d.count + ' vote' + (d.count == 1 ? '' : 's'))
+        : 'Be the first to rate';
+    })
+    .catch(function () {
+      var el = document.getElementById('rate-result');
+      if (el) { el.textContent = ''; }
+    });
+
+  try {
+    var already = localStorage.getItem(RATED_KEY);
+    if (already) {
+      highlightStars(parseInt(already));
+      var sub = document.getElementById('rate-sub');
+      if (sub) { sub.textContent = 'Thanks for rating!'; }
+    }
+  } catch (e) {}
+}
+
+function previewStars(v) {
+  try { if (localStorage.getItem(RATED_KEY)) { return; } } catch (e) {}
+  var stars = document.querySelectorAll('#rate-stars .star');
+  for (var i = 0; i < stars.length; i++) {
+    stars[i].className = 'star' + (i < v ? ' hover' : '');
+  }
+}
+
+function highlightStars(v) {
+  var stars = document.querySelectorAll('#rate-stars .star');
+  for (var i = 0; i < stars.length; i++) {
+    stars[i].className = 'star' + (i < v ? ' filled' : '');
+  }
+}
+
+function submitRating(stars) {
+  try { if (localStorage.getItem(RATED_KEY)) { return; } } catch (e) {}
+  highlightStars(stars);
+  var sub = document.getElementById('rate-sub');
+  if (sub) { sub.textContent = 'Submitting…'; }
+
+  fetch(RATING_API + '/vote', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stars: stars })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (sub) { sub.textContent = 'Thanks for rating!'; }
+      var res = document.getElementById('rate-result');
+      if (res && d.average) { res.textContent = '★ ' + d.average + ' · ' + d.count + ' vote' + (d.count == 1 ? '' : 's'); }
+      try { localStorage.setItem(RATED_KEY, String(stars)); } catch (e) {}
+      dismissToast(true);
+      if (typeof gtag === 'function') { gtag('event', 'tool_rated', { stars: stars }); }
+    })
+    .catch(function () {
+      if (sub) { sub.textContent = "Couldn't submit — try again later."; }
+    });
+}
+
+function maybeShowRatingToast() {
+  if (toastShownThisSession) { return; }
+  try {
+    if (localStorage.getItem(RATED_KEY)) { return; }
+    if (sessionStorage.getItem('luatools-toast-dismissed')) { return; }
+  } catch (e) {}
+  toastShownThisSession = true;
+  setTimeout(function () {
+    var t = document.getElementById('rate-toast');
+    if (t) { t.classList.add('show'); }
+  }, 3500);
+}
+
+function dismissToast(rated) {
+  var t = document.getElementById('rate-toast');
+  if (t) { t.classList.remove('show'); }
+  if (!rated) {
+    try { sessionStorage.setItem('luatools-toast-dismissed', '1'); } catch (e) {}
+  }
+}
+
+function scrollToRating() {
+  var el = document.getElementById('rate');
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  dismissToast();
+}
+
+loadRating();
 
 /* ── THEME TOGGLE (dark default / light mode opt-in) ── */
 function toggleTheme() {
@@ -847,6 +1033,7 @@ function validateLua() {
   }
 
   renderValResult(all, lines.length);
+  maybeShowRatingToast();
 }
 
 function renderValResult(items, totalLines) {
@@ -950,6 +1137,7 @@ function formatLua() {
   if (typeof gtag === 'function') {
     gtag('event', 'tool_used', { tool_name: 'formatter' });
   }
+  maybeShowRatingToast();
 }
 
 /* ════════════════════════════════════════
@@ -1005,6 +1193,7 @@ function minifyLua() {
   if (typeof gtag === 'function') {
     gtag('event', 'tool_used', { tool_name: 'minifier', size_reduction_pct: saved });
   }
+  maybeShowRatingToast();
 }
 
 function findCommentStart(line) {
