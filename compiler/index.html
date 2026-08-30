@@ -6,16 +6,16 @@
 <meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" />
 <meta name="robots" content="index, follow">
 
-<title>Lua Online Compiler &amp; Interpreter - Run, Test &amp; Visualize Lua Code</title>
-<meta name="description" content="Lua online compiler and interpreter. Write, run and test Lua 5.4 code in your browser with a real syntax-highlighted editor, instant output, and a built-in variable visualizer. Free, no login.">
+<title>Lua Visualizer &amp; Online Compiler - Run, Test &amp; Debug Lua Code</title>
+<meta name="description" content="Free Lua visualizer and online compiler. Run Lua 5.4 in your browser and inspect every local and global variable, table, and function your script creates. Instant output, no login.">
 <link rel="canonical" href="https://franrivalbigprojects.github.io/lua-tools/sandbox/index.html">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Lua Sandbox Online",
-  "description": "Free browser-based Lua sandbox with a live variable visualizer. Run Lua 5.4 scripts client-side, no login, no server execution.",
+  "name": "Lua Visualizer & Online Compiler",
+  "description": "Free browser-based Lua visualizer and online compiler. Run Lua 5.4 scripts client-side and inspect every local and global variable, no login, no server execution.",
   "url": "https://franrivalbigprojects.github.io/lua-tools/sandbox/index.html",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Web",
@@ -40,7 +40,7 @@
     {
       "@type": "Question",
       "name": "What is the difference between a Lua visualizer and a plain Lua compiler?",
-      "acceptedAnswer": { "@type": "Answer", "text": "A plain compiler only shows what your script prints to the console. A Lua visualizer additionally inspects the program's final state - every variable, table, and function your script created - and displays it as a structured list, so you can see what your code actually built without adding print statements for every value." }
+      "acceptedAnswer": { "@type": "Answer", "text": "A plain compiler only shows what your script prints to the console. A Lua visualizer additionally inspects the program's final state - every local and global variable, table, and function your script created - and displays it as a structured list, so you can see what your code actually built without adding print statements for every value." }
     },
     {
       "@type": "Question",
@@ -149,6 +149,7 @@ strong { color: var(--text); }
 table.vars-table { width: 100%; border-collapse: collapse; }
 table.vars-table th { text-align: left; font-family: var(--sans); font-size: 11px; color: #9aa2ac; text-transform: uppercase; letter-spacing: .04em; padding: 8px 16px; border-bottom: 1px solid #eef0f2; position: sticky; top: 0; background: #fff; }
 table.vars-table td { padding: 7px 16px; border-bottom: 1px solid #eef0f2; font-family: var(--mono); font-size: 12px; }
+table.vars-table td.vs { color: #6b7280; text-transform: uppercase; font-size: 10.5px; letter-spacing: .04em; }
 table.vars-table td.vn { color: var(--acc2); font-weight: 600; }
 table.vars-table td.vt { color: #b45309; }
 table.vars-table td.vv { color: #1f2328; word-break: break-all; }
@@ -185,8 +186,8 @@ footer nav a:hover { color: var(--acc); }
 <body>
 
 <div class="hero-bar">
-  <h1>Lua Online <em>Compiler &amp; Interpreter</em></h1>
-  <span class="sub">Free &middot; runs in your browser &middot; Lua 5.4</span>
+  <h1>Lua <em>Visualizer</em> &amp; Online Compiler</h1>
+  <span class="sub">Free &middot; runs in your browser &middot; Lua 5.4 &middot; inspect local &amp; global vars</span>
 </div>
 
 <section id="sandbox" class="full-bleed">
@@ -225,7 +226,7 @@ footer nav a:hover { color: var(--acc); }
           <div class="ide-panel" id="panel-vars">
             <div class="vars-empty" id="vars-empty">Run a script to see its variables here.</div>
             <table class="vars-table" id="vars-table" style="display:none">
-              <thead><tr><th>Name</th><th>Type</th><th>Value</th></tr></thead>
+              <thead><tr><th>Scope</th><th>Name</th><th>Type</th><th>Value</th></tr></thead>
               <tbody id="vars-body"></tbody>
             </table>
           </div>
@@ -234,7 +235,7 @@ footer nav a:hover { color: var(--acc); }
     </div>
 </section>
 
-<p class="blurb">This is a free <strong>Lua online compiler and interpreter</strong> &mdash; a genuine <strong>Lua script tester online</strong> that runs Lua 5.4 entirely in your browser. Switch to the <strong>Variables</strong> tab and it doubles as a <strong>Lua visualizer</strong> (a <strong>Lua script visualizer</strong>, really), listing every value your code produced without extra print statements. The syntax-highlighted, line-numbered editor also works well as a lightweight <strong>Lua visual editor</strong> for quick scripts and algorithm testing.</p>
+<p class="blurb">This is a free <strong>Lua visualizer</strong> and <strong>Lua online compiler</strong> &mdash; a genuine <strong>Lua script tester online</strong> that runs Lua 5.4 entirely in your browser. Switch to the <strong>Variables</strong> tab and it inspects every <strong>local and global</strong> variable, table, and function your script produced (a real <strong>Lua script visualizer</strong>), without extra print statements. The syntax-highlighted, line-numbered editor also works well as a lightweight <strong>Lua visual editor</strong> for quick scripts and algorithm testing.</p>
 <section id="guide">
   <div class="container">
     <h2>Quick Lua <em>Syntax Guide</em></h2>
@@ -243,7 +244,7 @@ footer nav a:hover { color: var(--acc); }
       <div class="ib">
         <h3>Basics</h3>
         <ul class="tip-list">
-          <li><strong>local</strong> declares a scoped variable &mdash; always prefer it over globals</li>
+          <li><strong>local</strong> declares a scoped variable &mdash; always prefer it over globals, and the Variables tab now tracks these too</li>
           <li><strong>..</strong> concatenates strings, not <code>+</code></li>
           <li><strong>~=</strong> means not-equal, not <code>!=</code></li>
           <li>Blocks end with <strong>end</strong>, except <strong>repeat</strong>, which ends with <strong>until</strong></li>
@@ -280,7 +281,7 @@ footer nav a:hover { color: var(--acc); }
     <h2>Lua Sandbox &ndash; <em>FAQ</em></h2>
     <div class="faq-item"><div class="faq-q" onclick="tf(this)">What is a Lua sandbox online?<span class="faq-tog">+</span></div><div class="faq-a">A Lua sandbox online is a website where you can write and run Lua code without installing Lua on your machine. This sandbox runs a real Lua 5.4 virtual machine compiled to JavaScript, so your script executes entirely inside the browser tab &mdash; nothing is sent to a server.</div></div>
     <div class="faq-item"><div class="faq-q" onclick="tf(this)">Is my Lua code executed on a server?<span class="faq-tog">+</span></div><div class="faq-a">No. Most online Lua compilers send your code to a backend server, run it there, and stream the result back. This tool instead runs a Lua interpreter directly on your device, so your code never leaves your browser and there is no queue or server timeout.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="tf(this)">What is the difference between a Lua visualizer and a plain Lua compiler?<span class="faq-tog">+</span></div><div class="faq-a">A plain compiler only shows what your script prints to the console. A Lua visualizer additionally inspects the program's final state &mdash; every variable, table, and function your script created &mdash; and displays it as a structured list, so you can see what your code actually built without adding print statements for every value.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="tf(this)">What is the difference between a Lua visualizer and a plain Lua compiler?<span class="faq-tog">+</span></div><div class="faq-a">A plain compiler only shows what your script prints to the console. A Lua visualizer additionally inspects the program's final state &mdash; every local and global variable, table, and function your script created &mdash; and displays it as a structured list, so you can see what your code actually built without adding print statements for every value.</div></div>
     <div class="faq-item"><div class="faq-q" onclick="tf(this)">Can I use this as a Lua visual editor for larger scripts?<span class="faq-tog">+</span></div><div class="faq-a">Yes. The editor includes synced line numbers, monospace formatting, and instant error feedback with the offending line reported in the output panel, which covers the core needs of a Lua visual editor for scripts up to a few hundred lines.</div></div>
     <div class="faq-item"><div class="faq-q" onclick="tf(this)">Does this Lua sandbox work for Roblox Luau scripts?<span class="faq-tog">+</span></div><div class="faq-a">This sandbox runs standard Lua 5.4, not Luau. Roblox-specific globals like game, workspace, or Instance.new are not available here since they only exist inside the Roblox engine. Use it to test plain Lua logic, algorithms, and data structures before porting them into Roblox Studio.</div></div>
   </div>
@@ -364,30 +365,62 @@ function clearAll() {
   showPanel("console");
 }
 
+/*
+ * buildWrappedScript appends two collection passes after the user's code,
+ * inside the SAME chunk/function so debug.getlocal can still see the
+ * user's top-level locals (they go out of scope once the enclosing
+ * function returns, so this has to run before that happens):
+ *   1) debug.getlocal walks the running chunk's local variable slots
+ *   2) a _G diff (against a baseline snapshot) catches new globals
+ * Every helper name uses a "__" prefix so both passes can filter their
+ * own temporaries out of the results.
+ */
 function buildWrappedScript(userCode) {
   var lines = [
     "local __baseline = {}",
     "for k in pairs(_G) do __baseline[k] = true end",
     userCode,
-    "local __vars = {}",
+    "local __out = {}",
+    "do",
+    "  local __idx = 1",
+    "  while true do",
+    "    local __n, __v = debug.getlocal(1, __idx)",
+    "    if not __n then break end",
+    "    if string.sub(__n, 1, 1) ~= \"(\" and string.sub(__n, 1, 2) ~= \"__\" then",
+    "      local __t = type(__v)",
+    "      if __t == \"function\" then",
+    "        table.insert(__out, \"local\\t\"..__n..\"\\t\"..__t..\"\\tfunction\")",
+    "      elseif __t == \"table\" then",
+    "        local __items = {}",
+    "        for __kk,__vv in pairs(__v) do",
+    "          table.insert(__items, tostring(__kk)..\"=\"..tostring(__vv))",
+    "        end",
+    "        table.insert(__out, \"local\\t\"..__n..\"\\t\"..__t..\"\\t{\"..table.concat(__items, \", \")..\"}\")",
+    "      else",
+    "        table.insert(__out, \"local\\t\"..__n..\"\\t\"..__t..\"\\t\"..tostring(__v))",
+    "      end",
+    "    end",
+    "    __idx = __idx + 1",
+    "  end",
+    "end",
     "for k,v in pairs(_G) do",
     "  if not __baseline[k] then",
     "    local t = type(v)",
     "    if t == \"function\" then",
-    "      table.insert(__vars, k..\"\\t\"..t..\"\\tfunction\")",
+    "      table.insert(__out, \"global\\t\"..k..\"\\t\"..t..\"\\tfunction\")",
     "    elseif t == \"table\" then",
     "      local items = {}",
     "      for kk,vv in pairs(v) do",
     "        table.insert(items, tostring(kk)..\"=\"..tostring(vv))",
     "      end",
-    "      table.insert(__vars, k..\"\\t\"..t..\"\\t{\"..table.concat(items, \", \")..\"}\")",
+    "      table.insert(__out, \"global\\t\"..k..\"\\t\"..t..\"\\t{\"..table.concat(items, \", \")..\"}\")",
     "    else",
-    "      table.insert(__vars, k..\"\\t\"..t..\"\\t\"..tostring(v))",
+    "      table.insert(__out, \"global\\t\"..k..\"\\t\"..t..\"\\t\"..tostring(v))",
     "    end",
     "  end",
     "end",
     "print(\"__VARS_START__\")",
-    "for _,line in ipairs(__vars) do print(line) end",
+    "for _,line in ipairs(__out) do print(line) end",
     "print(\"__VARS_END__\")"
   ];
   return lines.join("\n");
@@ -402,16 +435,20 @@ function renderVars(varLines) {
   if (!varLines.length) {
     table.style.display = "none";
     empty.style.display = "block";
-    empty.textContent = "No new variables detected. Assign a global (e.g. result = 42) to see it here.";
+    empty.textContent = "No variables detected. Declare a local or global (e.g. local result = 42) to see it here.";
     return;
   }
 
   for (var i = 0; i < varLines.length; i++) {
     var parts = varLines[i].split("\t");
-    var name = parts[0] || "";
-    var type_ = parts[1] || "";
-    var value = parts.slice(2).join("\t");
+    var scope = parts[0] || "";
+    var name = parts[1] || "";
+    var type_ = parts[2] || "";
+    var value = parts.slice(3).join("\t");
     var tr = document.createElement("tr");
+    var tdScope = document.createElement("td");
+    tdScope.className = "vs";
+    tdScope.textContent = scope;
     var tdName = document.createElement("td");
     tdName.className = "vn";
     tdName.textContent = name;
@@ -421,6 +458,7 @@ function renderVars(varLines) {
     var tdValue = document.createElement("td");
     tdValue.className = "vv";
     tdValue.textContent = value;
+    tr.appendChild(tdScope);
     tr.appendChild(tdName);
     tr.appendChild(tdType);
     tr.appendChild(tdValue);
