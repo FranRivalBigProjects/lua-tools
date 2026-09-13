@@ -1,298 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('luatools-theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) {}
+  })();
+</script>
+<meta name="robots" content="index, follow">
+<title>Privacy Policy – Lua Tools</title>
+<meta name="description" content="Privacy Policy for Lua Tools: what data we collect, how it's used, and your rights.">
+<link rel="canonical" href="https://franrivalbigprojects.github.io/lua-tools/legal/privacy-policy/">
 
-    <title>Privacy Policy - [LuaTools]</title>
-    <meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <meta name="description" content="Privacy Policy for [LuaTools]. Learn how information is handled when using our website and web tools.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:   #070a10; --bg2: #0c1018; --bg3: #111820;
+  --b:    #182030; --b2:  #1e2c40;
+  --text: #cce8f8; --muted: #3868a0;
+  --acc:  #22d3ee; --acc2: #06b6d4;
+  --head: #ffffff;
+  --mono: 'JetBrains Mono',monospace; --sans: 'Inter',sans-serif;
+}
+html[data-theme="light"] {
+  --bg:   #f4f7fb; --bg2: #ffffff; --bg3: #eaf0f7;
+  --b:    #dde5ee; --b2:  #c7d3e2;
+  --text: #14202e; --muted: #52697f;
+  --acc:  #0e7fa3; --acc2: #0b6a89;
+  --head: #0c1622;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.75; }
+.container { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+header { background: var(--bg2); border-bottom: 2px solid var(--acc); padding: 36px 0 22px; }
+.bc { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+.bc a { color: var(--muted); text-decoration: none; }
+.bc a:hover { color: var(--acc); }
+h1 { font-size: clamp(22px, 4vw, 30px); font-weight: 700; color: var(--head); margin-bottom: 8px; }
+.updated { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+main { padding: 40px 0 60px; }
+h2 { font-size: 17px; font-weight: 700; color: var(--head); margin: 30px 0 10px; }
+h2:first-child { margin-top: 0; }
+p, li { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+ul { margin-left: 20px; margin-bottom: 12px; }
+strong { color: var(--text); }
+code { font-family: var(--mono); font-size: 12px; background: var(--bg3); padding: 2px 6px; border-radius: 3px; color: var(--acc); }
+a.link { color: var(--acc); }
+footer { border-top: 1px solid var(--b); padding: 22px 0; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer nav { display: flex; gap: 14px; flex-wrap: wrap; }
+footer nav a { color: var(--muted); text-decoration: none; }
+footer nav a:hover { color: var(--acc); }
+</style>
 </head>
-
 <body>
 
-<main>
-
+<header>
+  <div class="container">
+    <p class="bc"><a href="../../">Lua Tools</a> / Legal / Privacy Policy</p>
     <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: August 2026</p>
+  </div>
+</header>
 
-    <p><strong>Last updated:</strong> [September 2026]</p>
+<main>
+  <div class="container">
+    <p>This Privacy Policy describes how Lua Tools (<a class="link" href="https://franrivalbigprojects.github.io/lua-tools/">franrivalbigprojects.github.io/lua-tools</a>) handles information when you use the site.</p>
 
-    <p>
-        At <strong>[SITE NAME]</strong> ("the Site", "we", "us", or "our"),
-        we respect the privacy of people who use our website and the tools
-        available through it.
-    </p>
+    <h2>How the tools work</h2>
+    <p>The Validator, Formatter, Minifier, and Pattern Tester all run <strong>entirely in your browser</strong>. Any Lua code, patterns, or test strings you paste into the site are processed locally on your device and are <strong>never sent to, stored on, or seen by our servers</strong>. We have no visibility into the code you validate, format, minify, or test.</p>
 
-    <p>
-        This Privacy Policy explains what information may be collected when
-        using the Site, how that information is used, and our general practices
-        regarding user privacy.
-    </p>
-
-
-    <h2>1. Information We Collect</h2>
-
-    <p>
-        Our goal is to provide useful web tools and continuously improve their
-        functionality. For this purpose, we may collect information related to
-        how the Site and its tools are used.
-    </p>
-
-
-    <h3>1.1 Information Provided When Using Our Tools</h3>
-
-    <p>
-        Some of our web tools may require users to enter information in order
-        to perform a specific function.
-    </p>
-
-    <p>
-        The type of information entered depends on the particular tool being
-        used.
-    </p>
-
-    <p>
-        Whenever technically possible, information entered into our tools is
-        processed directly within the user's browser and is not stored on our
-        servers.
-    </p>
-
-    <p>
-        When a tool requires information to be sent to our servers for
-        processing, such information is used only to provide the requested
-        functionality, unless otherwise stated.
-    </p>
-
-    <p>
-        We do not intentionally require personal information such as names,
-        physical addresses, telephone numbers, passwords, or financial
-        information to use our tools, unless a specific tool explicitly
-        states otherwise.
-    </p>
-
-
-    <h3>1.2 Usage and Behavioral Data</h3>
-
-    <p>
-        We may collect information related to how users interact with the Site,
-        including:
-    </p>
-
+    <h2>Information we collect</h2>
     <ul>
-        <li>Pages or tools visited.</li>
-        <li>Approximate time spent on pages.</li>
-        <li>Interactions with elements of the Site.</li>
-        <li>Tools and features used.</li>
-        <li>Events related to the operation of our tools.</li>
-        <li>General information about the device and browser.</li>
-        <li>Technical information necessary to identify errors or improve performance.</li>
-        <li>Aggregated and statistical information about Site usage.</li>
+      <li><strong>Usage analytics (Google Analytics, GA4):</strong> if you consent, we collect anonymized/aggregated data such as which tool tabs you open, whether you run a validation/format/minify/pattern-test action, and which related tools you click through to. This helps us understand which features are useful and where to improve. No code content is ever included in this data.</li>
+      <li><strong>Rating submissions:</strong> if you rate the tool, we store the star rating you submit (via a lightweight backend) to display an aggregate score. No personal identifiers are attached to your rating.</li>
+      <li><strong>Advertising data (Google AdSense):</strong> subject to your consent and once approved, Google may use cookies to serve and measure ads, and may use data as described in Google's own policies (linked below).</li>
+      <li><strong>Theme preference:</strong> stored locally on your device only (light/dark mode), never transmitted to us.</li>
     </ul>
 
-    <p>
-        This information is primarily used to understand how our tools are
-        being used and to determine which features are useful to our users.
-    </p>
-
-
-    <h2>2. How We Use Information</h2>
-
-    <p>
-        Information collected through the Site may be used to:
-    </p>
-
+    <h2>What we do not collect</h2>
     <ul>
-        <li>Improve our tools and services.</li>
-        <li>Analyze general user behavior.</li>
-        <li>Identify errors and technical problems.</li>
-        <li>Measure Site and tool performance.</li>
-        <li>Understand which tools and features are most frequently used.</li>
-        <li>Improve the user experience.</li>
-        <li>Develop new tools and functionality.</li>
-        <li>Maintain the security and stability of the Site.</li>
-        <li>Generate general statistics about our websites and tools.</li>
+      <li>We do not require an account, login, or email address to use any tool.</li>
+      <li>We do not collect or store the Lua code, patterns, or strings you enter.</li>
+      <li>We do not sell personal data.</li>
     </ul>
 
-    <p>
-        We do not use this information to intentionally create personal
-        profiles of users for commercial purposes.
-    </p>
+    <h2>Legal basis and consent</h2>
+    <p>Where required by applicable law (such as the EU/UK GDPR or similar regulations), we ask for your consent before enabling analytics or advertising cookies, via the consent banner shown on your first visit. You can decline non-essential cookies and still use all tools without restriction. See our <a class="link" href="../cookie-policy/">Cookie Policy</a> for details on individual cookies.</p>
 
+    <h2>Third-party services</h2>
+    <p>We use the following third-party services, which have their own privacy practices:</p>
+    <ul>
+      <li><a class="link" href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Analytics / Google AdSense — Google Privacy Policy</a></li>
+    </ul>
 
-    <h2>3. Google Analytics and Analytics Services</h2>
+    <h2>Your rights</h2>
+    <p>Depending on your location, you may have rights to access, correct, or delete personal data we hold about you, and to withdraw consent at any time. Since we do not require accounts and store minimal identifiable data, most requests can be resolved simply by clearing your browser's local storage and cookies for this site, or by declining non-essential cookies in the consent banner.</p>
 
-    <p>
-        We may use analytics services such as <strong>Google Analytics</strong>
-        to understand how visitors use our Site.
-    </p>
+    <h2>Changes to this policy</h2>
+    <p>We may update this Privacy Policy from time to time. The "Last updated" date at the top of this page reflects the most recent revision.</p>
 
-    <p>
-        These services may collect technical and interaction information
-        related to browsing activity, such as pages viewed, events,
-        device information, browser information, and other usage metrics.
-    </p>
-
-    <p>
-        Information obtained through analytics services is used primarily for
-        statistical purposes and to improve the functionality, content, and
-        user experience of the Site.
-    </p>
-
-    <p>
-        The use of these services may involve cookies or similar technologies.
-    </p>
-
-    <p>
-        For additional information regarding how Google Analytics processes
-        information, users may review Google's applicable privacy policies
-        and documentation.
-    </p>
-
-
-    <h2>4. Personal Information</h2>
-
-    <p>
-        <strong>
-            We do not sell, rent, or commercially trade users' personal
-            information.
-        </strong>
-    </p>
-
-    <p>
-        Our tools are generally designed to function without requiring users
-        to create an account or provide personal information, unless a
-        particular tool explicitly states otherwise.
-    </p>
-
-    <p>
-        If a tool allows users to enter information, we recommend that users
-        do not enter personal, confidential, financial, password-related, or
-        other sensitive information when such information is not necessary
-        for the requested functionality.
-    </p>
-
-
-    <h2>5. Sharing of Information</h2>
-
-    <p>
-        We may use third-party service providers that help us operate,
-        analyze, maintain, and secure the Site. These may include hosting
-        providers, analytics services, infrastructure providers, and security
-        services.
-    </p>
-
-    <p>
-        Such providers may process technical or statistical information as
-        necessary to provide their services.
-    </p>
-
-    <p>
-        We do not sell or provide users' information to third parties for
-        direct marketing purposes.
-    </p>
-
-    <p>
-        We may also disclose information when reasonably necessary to comply
-        with applicable law, respond to a valid request from a competent
-        authority, protect our rights, or prevent fraud, abuse, or security
-        threats.
-    </p>
-
-
-    <h2>6. Security</h2>
-
-    <p>
-        We use reasonable technical and administrative measures designed to
-        protect the information we process and maintain the security of our
-        services.
-    </p>
-
-    <p>
-        However, no system for storing or transmitting information over the
-        Internet can guarantee absolute security.
-    </p>
-
-
-    <h2>7. Third-Party Services</h2>
-
-    <p>
-        Our Site may use third-party services for analytics, hosting, content
-        delivery, security, and other technologies necessary for the operation
-        of our websites and tools.
-    </p>
-
-    <p>
-        Information processed directly by these third-party providers is
-        subject to their respective privacy policies and terms.
-    </p>
-
-
-    <h2>8. External Links</h2>
-
-    <p>
-        Our Site may contain links to external websites.
-    </p>
-
-    <p>
-        We are not responsible for the privacy practices, content, or security
-        of websites that are not operated by us.
-    </p>
-
-    <p>
-        We recommend reviewing the privacy policies of external websites
-        before providing them with information.
-    </p>
-
-
-    <h2>9. Children's Privacy</h2>
-
-    <p>
-        Our tools are not specifically designed to collect personal information
-        from children.
-    </p>
-
-    <p>
-        We do not intentionally request personal information from children.
-    </p>
-
-
-    <h2>10. Changes to This Privacy Policy</h2>
-
-    <p>
-        We may update this Privacy Policy from time to time to reflect changes
-        to our tools, services, technologies, or applicable legal requirements.
-    </p>
-
-    <p>
-        The most recent version will always be available on this page and will
-        include the date of the latest update.
-    </p>
-
-
-    <h2>11. Contact</h2>
-
-    <p>
-        If you have questions regarding this Privacy Policy or our privacy
-        practices, you may contact us through:
-    </p>
-
-    <p>
-        <strong>Website:</strong> LuaTools
-    </p>
-
-    <p>
-        <strong>Email:</strong> Fran.Rivas2020@gmail.com
-    </p>
-
-
-    <hr>
-
-    <p>
-        <strong>Last updated:</strong> [September 2026]
-    </p>
-
+    <h2>Contact</h2>
+    <p>Questions about this policy can be directed via the contact information on the <a class="link" href="https://franrivalbigprojects.github.io/">Lua Tools project page</a>.</p>
+  </div>
 </main>
+
+<footer>
+  <div class="container">
+    <span>Lua Tools</span>
+    <nav>
+      <a href="../../">Home</a>
+      <a href="./">Privacy Policy</a>
+      <a href="../cookie-policy/">Cookie Policy</a>
+    </nav>
+  </div>
+</footer>
 
 </body>
 </html>
