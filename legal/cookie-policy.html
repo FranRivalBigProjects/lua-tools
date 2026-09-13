@@ -1,248 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('luatools-theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) {}
+  })();
+</script>
+<meta name="robots" content="index, follow">
+<title>Cookie Policy – Lua Tools</title>
+<meta name="description" content="Cookie Policy for Lua Tools: what cookies and local storage we use, why, and how to control them.">
+<link rel="canonical" href="https://franrivalbigprojects.github.io/lua-tools/legal/cookie-policy/">
 
-    <title>Cookie Policy - LuaTools</title>
-    <meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <meta name="description" content="Cookie Policy for [LuaTools]. Learn how cookies and similar technologies are used on our website.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:   #070a10; --bg2: #0c1018; --bg3: #111820;
+  --b:    #182030; --b2:  #1e2c40;
+  --text: #cce8f8; --muted: #3868a0;
+  --acc:  #22d3ee; --acc2: #06b6d4;
+  --head: #ffffff;
+  --mono: 'JetBrains Mono',monospace; --sans: 'Inter',sans-serif;
+}
+html[data-theme="light"] {
+  --bg:   #f4f7fb; --bg2: #ffffff; --bg3: #eaf0f7;
+  --b:    #dde5ee; --b2:  #c7d3e2;
+  --text: #14202e; --muted: #52697f;
+  --acc:  #0e7fa3; --acc2: #0b6a89;
+  --head: #0c1622;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.75; }
+.container { max-width: 760px; margin: 0 auto; padding: 0 22px; }
+header { background: var(--bg2); border-bottom: 2px solid var(--acc); padding: 36px 0 22px; }
+.bc { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+.bc a { color: var(--muted); text-decoration: none; }
+.bc a:hover { color: var(--acc); }
+h1 { font-size: clamp(22px, 4vw, 30px); font-weight: 700; color: var(--head); margin-bottom: 8px; }
+.updated { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+main { padding: 40px 0 60px; }
+h2 { font-size: 17px; font-weight: 700; color: var(--head); margin: 30px 0 10px; }
+h2:first-child { margin-top: 0; }
+p, li { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+ul { margin-left: 20px; margin-bottom: 12px; }
+strong { color: var(--text); }
+code { font-family: var(--mono); font-size: 12px; background: var(--bg3); padding: 2px 6px; border-radius: 3px; color: var(--acc); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--b); border-radius: 8px; margin: 14px 0; }
+table { width: 100%; border-collapse: collapse; background: var(--bg2); font-size: 13px; }
+thead th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; padding: 10px 12px; text-align: left; color: var(--muted); background: var(--bg3); white-space: nowrap; }
+tbody td { padding: 9px 12px; color: var(--muted); border-top: 1px solid var(--b); vertical-align: top; }
+tbody td strong { color: var(--text); }
+a.link { color: var(--acc); }
+footer { border-top: 1px solid var(--b); padding: 22px 0; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer nav { display: flex; gap: 14px; flex-wrap: wrap; }
+footer nav a { color: var(--muted); text-decoration: none; }
+footer nav a:hover { color: var(--acc); }
+</style>
 </head>
-
 <body>
 
-<main>
-
+<header>
+  <div class="container">
+    <p class="bc"><a href="../../">Lua Tools</a> / Legal / Cookie Policy</p>
     <h1>Cookie Policy</h1>
+    <p class="updated">Last updated: August 2026</p>
+  </div>
+</header>
 
-    <p><strong>Last updated:</strong> [September 2026]</p>
+<main>
+  <div class="container">
+    <p>This Cookie Policy explains what cookies and similar technologies (such as local storage) Lua Tools (<a class="link" href="https://franrivalbigprojects.github.io/lua-tools/">franrivalbigprojects.github.io/lua-tools</a>) uses, why we use them, and how you can control them.</p>
 
-    <p>
-        At <strong>[SITE NAME]</strong>, we use cookies and similar technologies
-        to ensure that the Site operates properly, understand how our tools are
-        used, and improve the overall user experience.
-    </p>
+    <h2>What are cookies?</h2>
+    <p>Cookies are small text files placed on your device when you visit a website. Similar technologies include <strong>local storage</strong>, which browsers use to store small pieces of data directly on your device without expiration dates.</p>
 
-    <p>
-        This Cookie Policy explains what cookies are, how we use them, and how
-        users can manage them.
-    </p>
+    <h2>Cookies and storage we use</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Type</th><th>Purpose</th><th>Duration</th></tr></thead>
+        <tbody>
+          <tr><td><strong>_ga, _ga_*</strong></td><td>Cookie (Google Analytics)</td><td>Distinguishes users and sessions to measure site usage (pages viewed, tools used)</td><td>Up to 2 years</td></tr>
+          <tr><td><strong>luatools-theme</strong></td><td>Local storage</td><td>Remembers whether you chose light or dark mode</td><td>Until cleared by you</td></tr>
+          <tr><td><strong>luatools-rated</strong></td><td>Local storage</td><td>Remembers if you already rated this tool, so we don't ask again</td><td>Until cleared by you</td></tr>
+          <tr><td><strong>luatools-consent</strong></td><td>Local storage</td><td>Remembers your cookie consent choice</td><td>Until cleared by you</td></tr>
+          <tr><td><strong>IDE, test_cookie, etc.</strong></td><td>Cookie (Google AdSense)</td><td>Ad delivery, frequency capping and measurement, only after consent is granted</td><td>Varies (up to 2 years)</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-
-    <h2>1. What Are Cookies?</h2>
-
-    <p>
-        Cookies are small files of information that a website may store in a
-        user's browser or device.
-    </p>
-
-    <p>
-        Cookies and similar technologies can be used for technical purposes,
-        remembering certain settings, measuring website usage, and generating
-        statistics about how a website operates.
-    </p>
-
-
-    <h2>2. Types of Cookies We Use</h2>
-
-
-    <h3>2.1 Necessary Cookies</h3>
-
-    <p>
-        Some cookies may be necessary for certain parts of the Site to operate
-        correctly.
-    </p>
-
-    <p>
-        These cookies may be used for technical functionality, security,
-        basic configuration, or features required for specific tools.
-    </p>
-
-
-    <h3>2.2 Analytics and Statistics Cookies</h3>
-
-    <p>
-        We may use cookies and similar technologies to collect statistical
-        information about how users interact with our Site.
-    </p>
-
-    <p>
-        This may allow us to understand:
-    </p>
-
+    <h2>Categories</h2>
     <ul>
-        <li>Which pages are visited.</li>
-        <li>Which tools are used.</li>
-        <li>Which features receive the most interaction.</li>
-        <li>How long users approximately remain on certain pages.</li>
-        <li>How users interact with different elements.</li>
-        <li>General device and browser information.</li>
-        <li>Events related to the use of our tools.</li>
+      <li><strong>Strictly necessary:</strong> local storage for theme and consent preference. These do not require consent and cannot be disabled through our banner, as the site would not remember your basic preferences without them.</li>
+      <li><strong>Analytics:</strong> Google Analytics (GA4) cookies, used to understand which tools are used and how the site performs. Requires your consent.</li>
+      <li><strong>Advertising:</strong> Google AdSense cookies, used to serve and measure ads. Requires your consent.</li>
     </ul>
 
-    <p>
-        This information is used to analyze performance and improve our
-        websites and tools.
-    </p>
+    <h2>Your choices</h2>
+    <p>When you first visit Lua Tools, a banner lets you accept or decline non-essential cookies (analytics and advertising). You can change your choice at any time by clearing your browser's local storage for this site, or through your browser's cookie settings. Declining does not affect your ability to use the Validator, Formatter, Minifier, or Pattern Tester — all core functionality runs entirely in your browser regardless of your cookie choice.</p>
 
-
-    <h3>2.3 Google Analytics</h3>
-
-    <p>
-        We may use <strong>Google Analytics</strong> to collect statistics
-        regarding the use of our Site.
-    </p>
-
-    <p>
-        Google Analytics may use cookies and similar technologies to collect
-        information related to browsing activity and interactions within the
-        Site.
-    </p>
-
-    <p>
-        This information is primarily used to generate statistics and help us
-        understand how visitors use our tools.
-    </p>
-
-    <p>
-        Depending on the configuration implemented on the Site, certain
-        technical identifiers may be processed by the service provider.
-    </p>
-
-    <p>
-        For additional information regarding Google Analytics and its privacy
-        practices, users should consult Google's official documentation and
-        applicable privacy policies.
-    </p>
-
-
-    <h2>3. Information Entered Into Our Tools</h2>
-
-    <p>
-        Some of our web tools may allow users to enter information in order to
-        obtain a result or perform a specific function.
-    </p>
-
-    <p>
-        Information entered into a tool may be temporarily processed in order
-        to provide the requested functionality.
-    </p>
-
-    <p>
-        Whenever technically possible, processing is performed directly within
-        the user's browser and the information is not stored on our servers.
-    </p>
-
-    <p>
-        <strong>
-            We recommend that users do not enter personal, confidential,
-            financial, password-related, or sensitive information into our
-            tools when such information is not required for the requested
-            functionality.
-        </strong>
-    </p>
-
-
-    <h2>4. Purpose of Cookies</h2>
-
-    <p>
-        Cookies and similar technologies may be used to:
-    </p>
-
+    <h2>Third parties</h2>
+    <p>We use Google Analytics and (subject to approval) Google AdSense. These third parties may set their own cookies according to their own privacy and cookie policies:</p>
     <ul>
-        <li>Maintain the functionality of the Site.</li>
-        <li>Analyze website traffic and usage.</li>
-        <li>Understand general user behavior.</li>
-        <li>Measure tool performance.</li>
-        <li>Identify technical problems.</li>
-        <li>Improve navigation.</li>
-        <li>Improve our web tools.</li>
-        <li>Develop new features.</li>
-        <li>Generate aggregated statistics.</li>
+      <li><a class="link" href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">Google Cookie Policy</a></li>
+      <li><a class="link" href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
     </ul>
 
-    <p>
-        <strong>
-            We do not use cookies for the purpose of selling users' personal
-            information.
-        </strong>
-    </p>
-
-
-    <h2>5. Third-Party Cookies</h2>
-
-    <p>
-        Some cookies may be placed by third-party services that we use to
-        provide certain functionality or statistical analysis.
-    </p>
-
-    <p>
-        These services may include Google Analytics and other providers that
-        may be added to the Site in the future.
-    </p>
-
-    <p>
-        Third-party cookies are subject to the privacy and cookie policies of
-        their respective providers.
-    </p>
-
-
-    <h2>6. Managing Cookies</h2>
-
-    <p>
-        Most modern web browsers allow users to view, block, delete, or
-        restrict cookies through their browser settings.
-    </p>
-
-    <p>
-        Users may configure their browser to reject certain cookies or notify
-        them before cookies are stored.
-    </p>
-
-    <p>
-        Disabling certain cookies may affect the functionality of some parts
-        of the Site or its tools.
-    </p>
-
-
-    <h2>7. Changes to This Cookie Policy</h2>
-
-    <p>
-        We may update this Cookie Policy when the technologies used on the
-        Site, our tools, our service providers, or applicable legal requirements
-        change.
-    </p>
-
-    <p>
-        The updated version will be available on this page and will include the
-        date of the latest modification.
-    </p>
-
-
-    <h2>8. Contact</h2>
-
-    <p>
-        If you have questions regarding our use of cookies, you may contact us
-        through:
-    </p>
-
-    <p>
-        <strong>Website:</strong> [LuaTools]
-    </p>
-
-    <p>
-        <strong>Email:</strong> Fran.Rivas2020@gmail.com
-    </p>
-
-
-    <hr>
-
-    <p>
-        <strong>Last updated:</strong> [September 2026]
-    </p>
-
+    <h2>More information</h2>
+    <p>See our <a class="link" href="../privacy-policy/">Privacy Policy</a> for details on what data is collected and how it is used.</p>
+  </div>
 </main>
+
+<footer>
+  <div class="container">
+    <span>Lua Tools</span>
+    <nav>
+      <a href="../../">Home</a>
+      <a href="../privacy-policy/">Privacy Policy</a>
+      <a href="./">Cookie Policy</a>
+    </nav>
+  </div>
+</footer>
 
 </body>
 </html>
