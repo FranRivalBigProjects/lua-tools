@@ -17,11 +17,22 @@
 <meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" />
 <meta name="robots" content="index, follow">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3NG4HSYMTR"></script>
+<!-- Google Consent Mode v2 — default state (denied) must be set BEFORE gtag.js loads -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500
+  });
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3NG4HSYMTR"></script>
+<script>
   gtag('js', new Date());
   gtag('config', 'G-3NG4HSYMTR');
 </script>
@@ -268,6 +279,9 @@ footer nav a:hover { color: var(--acc); }
   footer .container { flex-direction: column; }
   .theme-toggle { right: 14px; bottom: 74px; }
   .rate-toast { left: 10px; right: 10px; bottom: 10px; }
+  .consent-banner { padding: 14px; }
+  .consent-actions { width: 100%; }
+  .consent-actions .btn { flex: 1; }
 }
 
 /* RATING BLOCK — above Pattern Reference */
@@ -327,6 +341,32 @@ footer nav a:hover { color: var(--acc); }
   background: none; border: none; color: var(--muted); cursor: pointer;
   font-size: 13px; padding: 4px; align-self: flex-end;
 }
+
+/* CONSENT BANNER — full-width, bottom, above rating toast in z-index */
+.consent-banner {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 400;
+  background: var(--bg2);
+  border-top: 1.5px solid var(--b2);
+  box-shadow: 0 -8px 24px rgba(10,16,24,.28);
+  padding: 18px 22px;
+  display: none;
+}
+.consent-banner.show { display: block; }
+.consent-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.consent-text { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; min-width: 240px; }
+.consent-text strong { color: var(--text); }
+.consent-text a { color: var(--acc); }
+.consent-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -338,6 +378,21 @@ footer nav a:hover { color: var(--acc); }
   <div class="rate-toast-actions">
     <button class="rate-toast-btn" onclick="scrollToRating()">Rate it</button>
     <button class="rate-toast-close" onclick="dismissToast()" aria-label="Dismiss">✕</button>
+  </div>
+</div>
+
+<!-- COOKIE CONSENT BANNER -->
+<div class="consent-banner" id="consent-banner" role="dialog" aria-label="Cookie consent">
+  <div class="consent-inner">
+    <p class="consent-text">
+      We use cookies for analytics and (once approved) advertising to keep Lua Tools free.
+      All code you paste stays in your browser — we never see or store it. See our
+      <a href="legal/cookie-policy/">Cookie Policy</a> and <a href="legal/privacy-policy/">Privacy Policy</a> for details.
+    </p>
+    <div class="consent-actions">
+      <button class="btn btn-s" onclick="handleConsent(false)">Reject non-essential</button>
+      <button class="btn btn-p" onclick="handleConsent(true)">Accept all</button>
+    </div>
   </div>
 </div>
 
@@ -671,6 +726,8 @@ footer nav a:hover { color: var(--acc); }
       <a href="#patterns">Patterns</a>
       <a href="#guide">Guide</a>
       <a href="#faq">FAQ</a>
+      <a href="legal/privacy-policy/">Privacy Policy</a>
+      <a href="legal/cookie-policy/">Cookie Policy</a>
     </nav>
   </div>
 </footer>
@@ -679,6 +736,49 @@ footer nav a:hover { color: var(--acc); }
      JAVASCRIPT — ES5, NO ARROW FUNCTIONS
      ================================================================ -->
 <script>
+
+/* ── COOKIE CONSENT (Google Consent Mode v2) ── */
+var CONSENT_KEY = 'luatools-consent';
+
+function initConsent() {
+  var choice;
+  try { choice = localStorage.getItem(CONSENT_KEY); } catch (e) { choice = null; }
+
+  if (choice === 'accepted') {
+    applyConsent(true);
+    return;
+  }
+  if (choice === 'rejected') {
+    applyConsent(false);
+    return;
+  }
+  /* No choice yet — show the banner and keep Consent Mode defaults (denied) */
+  var banner = document.getElementById('consent-banner');
+  if (banner) { banner.classList.add('show'); }
+}
+
+function applyConsent(granted) {
+  if (typeof gtag === 'function') {
+    gtag('consent', 'update', {
+      'ad_storage': granted ? 'granted' : 'denied',
+      'ad_user_data': granted ? 'granted' : 'denied',
+      'ad_personalization': granted ? 'granted' : 'denied',
+      'analytics_storage': granted ? 'granted' : 'denied'
+    });
+  }
+}
+
+function handleConsent(granted) {
+  applyConsent(granted);
+  try { localStorage.setItem(CONSENT_KEY, granted ? 'accepted' : 'rejected'); } catch (e) {}
+  var banner = document.getElementById('consent-banner');
+  if (banner) { banner.classList.remove('show'); }
+  if (typeof gtag === 'function') {
+    gtag('event', 'consent_choice', { choice: granted ? 'accepted' : 'rejected' });
+  }
+}
+
+initConsent();
 
 /* ── RATING WIDGET ── */
 var RATING_API = 'https://lua-tools.fran-rivas2020.workers.dev';
